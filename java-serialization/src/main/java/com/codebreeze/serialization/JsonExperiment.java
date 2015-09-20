@@ -1,35 +1,48 @@
 package com.codebreeze.serialization;
 
 import com.codebreeze.serialization.json.model.Json;
+import com.codebreeze.serialization.json.model.Json.AddressBook;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.function.Consumer;
+import java.io.IOException;
 
+import static com.codebreeze.serialization.Experiments.BYTE_ARRAY_SINK_HOLE;
+import static com.codebreeze.serialization.Experiments.OBJECT_SINK_HOLE;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
 public class JsonExperiment {
-    private static final Consumer<Json.AddressBook> ADDRESS_BOOK_SINK_HOLE = addressBook -> System.out.println(addressBook);
-    private static final Consumer<byte[]> BYTE_ARRAY_SINK_HOLE = addressBookByteArray -> {};
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 
-    public static final void main(final String...args) throws JsonProcessingException {
-        final Json.AddressBook addressBook = createJsonAddressBook();
-        BYTE_ARRAY_SINK_HOLE.accept(OBJECT_MAPPER.writeValueAsBytes(addressBook));
-        ADDRESS_BOOK_SINK_HOLE.accept(addressBook);
+    public static final void main(final String...args) throws IOException {
+        final AddressBook addressBook = randomAddressBook();
+        BYTE_ARRAY_SINK_HOLE.accept(createByteArray(addressBook));
+        OBJECT_SINK_HOLE.accept(createAddressBook(createByteArray(addressBook)));
     }
 
-    private static Json.AddressBook createJsonAddressBook() {
+    public static AddressBook randomAddressBook(){
+        return createJsonAddressBook();
+    }
+
+    public static AddressBook createAddressBook(final byte[] data) throws IOException {
+        return OBJECT_MAPPER.readValue(data, AddressBook.class);
+    }
+
+    public static byte[] createByteArray(final AddressBook addressBook) throws JsonProcessingException {
+        return OBJECT_MAPPER.writeValueAsBytes(addressBook);
+    }
+
+    private static AddressBook createJsonAddressBook() {
         final String description = randomAlphanumeric(300);
         final Json.Person person1 = createJsonPerson();
         final Json.Person person2 = createJsonPerson();
         final Json.Person person3 = createJsonPerson();
-        return new Json.AddressBook(description, asList(person1, person2, person3));
+        return new AddressBook(description, asList(person1, person2, person3));
     }
 
     private static Json.Person createJsonPerson() {

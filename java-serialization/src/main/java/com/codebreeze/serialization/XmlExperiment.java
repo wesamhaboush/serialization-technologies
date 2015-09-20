@@ -1,5 +1,6 @@
-package com.codebreeze.serialization.json.model;
+package com.codebreeze.serialization;
 
+import com.codebreeze.serialization.json.model.Json;
 import com.codebreeze.xml.simple.model.AddressBook;
 import com.codebreeze.xml.simple.model.Person;
 import com.codebreeze.xml.simple.model.PhoneNumber;
@@ -8,26 +9,39 @@ import com.codebreeze.xml.simple.model.PhoneType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
-import java.util.function.Consumer;
 
+import static com.codebreeze.serialization.Experiments.BYTE_ARRAY_SINK_HOLE;
+import static com.codebreeze.serialization.Experiments.OBJECT_SINK_HOLE;
 import static com.google.common.base.Throwables.propagate;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
 public class XmlExperiment {
-    private static final Consumer<AddressBook> ADDRESS_BOOK_SINK_HOLE = addressBook -> System.out.println(addressBook);
-    private static final Consumer<byte[]> BYTE_ARRAY_SINK_HOLE = addressBookByteArray -> {
-    };
     private static final Marshaller MARSHALLER = marshaller();
+    private static final Unmarshaller UNMARSHALLER = unmarshaller();
 
     public static final void main(final String... args) throws JAXBException {
-        final AddressBook addressBook = createXmlAddressBook();
+        final AddressBook addressBook = randomAddressBook();
+        BYTE_ARRAY_SINK_HOLE.accept(createByteArray(addressBook));
+        OBJECT_SINK_HOLE.accept(createAddressBook(createByteArray(addressBook)));
+    }
+
+    public static AddressBook randomAddressBook(){
+        return createXmlAddressBook();
+    }
+
+    public static AddressBook createAddressBook(final byte[] data) throws JAXBException {
+        return AddressBook.class.cast(UNMARSHALLER.unmarshal(new ByteArrayInputStream(data)));
+    }
+
+    public static byte[] createByteArray(final AddressBook addressBook) throws JAXBException {
         final StringWriter writer = new StringWriter();
         MARSHALLER.marshal(addressBook, writer);
-        BYTE_ARRAY_SINK_HOLE.accept(writer.toString().getBytes());
-        ADDRESS_BOOK_SINK_HOLE.accept(addressBook);
+        return writer.toString().getBytes();
     }
 
     private static AddressBook createXmlAddressBook() {
@@ -53,23 +67,21 @@ public class XmlExperiment {
         return new PhoneNumber(phoneNumberString, phoneType);
     }
 
-    public byte[] convertToXml(Object source, Class... type) {
-        try {
-            final JAXBContext context = JAXBContext.newInstance("com.codebreeze.xml.simple.model");
-            final Marshaller marshaller = context.createMarshaller();
-            final StringWriter sw = new StringWriter();
-            marshaller.marshal(source, sw);
-            return sw.toString().getBytes();
-        } catch (JAXBException e) {
-            throw propagate(e);
-        }
-    }
-
     private static Marshaller marshaller() {
         try {
             return JAXBContext
                     .newInstance("com.codebreeze.xml.simple.model")
                     .createMarshaller();
+        } catch (JAXBException e) {
+            throw propagate(e);
+        }
+    }
+
+    private static Unmarshaller unmarshaller() {
+        try {
+            return JAXBContext
+                    .newInstance("com.codebreeze.xml.simple.model")
+                    .createUnmarshaller();
         } catch (JAXBException e) {
             throw propagate(e);
         }

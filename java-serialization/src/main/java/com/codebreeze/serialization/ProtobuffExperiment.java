@@ -1,22 +1,31 @@
 package com.codebreeze.serialization;
 
 import com.codebreeze.proto.simple.model.Spec;
+import com.google.protobuf.InvalidProtocolBufferException;
 
-import java.util.function.Consumer;
-
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static com.codebreeze.serialization.Experiments.BYTE_ARRAY_SINK_HOLE;
+import static com.codebreeze.serialization.Experiments.OBJECT_SINK_HOLE;
+import static org.apache.commons.lang3.RandomStringUtils.*;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
 public class ProtobuffExperiment {
-    private static final Consumer<Spec.AddressBook> ADDRESS_BOOK_SINK_HOLE = addressBook -> System.out.println(addressBook);
-    private static final Consumer<byte[]> BYTE_ARRAY_SINK_HOLE = addressBookByteArray -> {};
 
-    public static final void main(final String...args){
-        final Spec.AddressBook addressBook = createSpecAddressBook();
-        BYTE_ARRAY_SINK_HOLE.accept(addressBook.toByteArray());
-        ADDRESS_BOOK_SINK_HOLE.accept(addressBook);
+    public static final void main(final String...args) throws InvalidProtocolBufferException {
+        final Spec.AddressBook addressBook = randomAddressBook();
+        BYTE_ARRAY_SINK_HOLE.accept(createByteArray(addressBook));
+        OBJECT_SINK_HOLE.accept(createAddressBook(createByteArray(addressBook)));
+    }
+
+    public static Spec.AddressBook randomAddressBook(){
+        return createSpecAddressBook();
+    }
+
+    public static Spec.AddressBook createAddressBook(final byte[] data) throws InvalidProtocolBufferException {
+        return Spec.AddressBook.parseFrom(data);
+    }
+
+    public static byte[] createByteArray(final Spec.AddressBook addressBook) {
+        return addressBook.toByteArray();
     }
 
     private static Spec.AddressBook createSpecAddressBook() {

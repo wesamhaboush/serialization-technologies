@@ -13,6 +13,11 @@ public class Json {
         private final String description;
         private final List<Person> person;
 
+        public AddressBook(){
+            description = null;
+            person = null;
+        }
+
         public AddressBook(final String description, final List<Person> person) {
             this.description = description;
             this.person = person;
@@ -30,6 +35,13 @@ public class Json {
         private final String email;
         private final List<PhoneNumber> phoneNumber;
 
+        public Person() {
+            this.id = 0;
+            this.name = null;
+            this.email = null;
+            this.phoneNumber = null;
+        }
+
         public Person(final String name, final int id, final String email, final List<PhoneNumber> phoneNumber) {
             this.id = id;
             this.name = name;
@@ -41,6 +53,11 @@ public class Json {
     public static class PhoneNumber {
         private final String number;
         private final PhoneType phoneType;
+
+        public PhoneNumber() {
+            this.number = null;
+            this.phoneType = null;
+        }
 
         public PhoneNumber(final String number, final PhoneType phoneType) {
             this.number = number;
