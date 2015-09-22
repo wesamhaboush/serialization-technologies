@@ -60,6 +60,26 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>2.6.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>1.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>1.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-reflection</artifactId>
+                <version>1.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-bytecode</artifactId>
+                <version>1.11</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -96,7 +116,22 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-reflection</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-bytecode</artifactId>
+        </dependency>
 
     </dependencies>
     <build>
@@ -128,22 +163,6 @@
                         <bindingIncludes>
                             <include>*.xjb</include>
                         </bindingIncludes>
-                        <!--<generateDirectory>target/generated-sources/java</generateDirectory>-->
-                        <!--<schemas>-->
-                        <!--<schema>-->
-                        <!--<fileset>-->
-                        <!--<directory>./src/main/resources/schemas</directory>-->
-                        <!--<includes>-->
-                        <!--<include>*.xsd</include>-->
-                        <!--</includes>-->
-                        <!--</fileset>-->
-                        <!--</schema>-->
-                        <!--</schemas>-->
-                        <!--<bindingDirectory>src/main/resources/bindings</bindingDirectory>-->
-                        <!--<schemaDirectory>src/main/resources/schemas</schemaDirectory>-->
-                        <!--<schemaIncludes>-->
-                        <!--<include>*.xsd</include>-->
-                        <!--</schemaIncludes>-->
                         <extension>true</extension>
                         <args>
                             <arg>-Xfluent-api</arg>
@@ -169,9 +188,9 @@
                                 <version>0.9.5</version>
                             </plugin>
                             <plugin>
-                                    <groupId>org.jvnet.jaxb2_commons</groupId>
-                                    <artifactId>jaxb2-fluent-api</artifactId>
-                                    <version>3.0</version>
+                                <groupId>org.jvnet.jaxb2_commons</groupId>
+                                <artifactId>jaxb2-fluent-api</artifactId>
+                                <version>3.0</version>
                             </plugin>
 
                             <plugin>
@@ -221,6 +240,51 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.4.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <shadeTestJar>true</shadeTestJar>
+                                <finalName>${project.artifactId}</finalName>
+                                <transformers>
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>org.openjdk.jmh.Main</mainClass>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.9.1</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>${project.basedir}/src/main/java</source>
+                                    <source>${project.basedir}/src/test/java</source>
+                                    <source>${project.basedir}/target/generated-proto</source>
+                                    <source>${project.basedir}/target/generated-sources/xjc</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -231,6 +295,14 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
