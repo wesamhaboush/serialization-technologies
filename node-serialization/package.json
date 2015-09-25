@@ -1,0 +1,26 @@
+{
+  "name": "node-serialization",
+  "version": "1.0.0",
+  "description": "node serialization performance tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "serialization",
+    "deserialization",
+    "performance",
+    "test",
+    "json",
+    "protobuff",
+    "xml"
+  ],
+  "author": "wesam haboush",
+  "license": "LGPLv3",
+  "dependencies": {
+    "micro-benchmark": "^1.3.22",
+    "pixl-xml": "^1.0.4",
+    "protocol-buffers": "^3.1.3",
+    "random-js": "^1.0.5"
+  }
+}
