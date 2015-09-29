@@ -43,11 +43,14 @@ function createPhoneNumber() {
     var phoneNumber = random.string(10, '0123456789');
     var phoneType = random.pick(['MOBILE', 'HOME', 'WORK']);
     return {
-        phoneNumber: phoneNumber,
+        number: phoneNumber,
         phoneType: phoneType
     };
 }
 
+module.exports.randomAddressBook = randomAddressBook;
+module.exports.toAddressBook = toAddressBook
+module.exports.toString = toString
 //var anAddressBook = randomAddressBook();
 //console.log(toString(anAddressBook));
 //console.log(JSON.stringify(toAddressBook(toString(anAddressBook)), null, "  "));

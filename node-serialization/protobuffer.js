@@ -51,6 +51,9 @@ function createPhoneNumber() {
         phoneType: phoneType
     };
 }
+module.exports.randomAddressBook = randomAddressBook;
+module.exports.toAddressBook = toAddressBook
+module.exports.toString = toString
 //var anAddressBook = randomAddressBook();
 //console.log(JSON.stringify(anAddressBook, null, " "));
 //console.log(toString(anAddressBook).length);
