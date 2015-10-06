@@ -2,11 +2,13 @@ package com.codebreeze.serialization;
 
 import com.codebreeze.proto.simple.model.Spec;
 import com.codebreeze.serialization.json.model.Json;
+import com.codebreeze.serialization.msgpack.model.MsgPack;
 import com.codebreeze.xml.simple.model.AddressBook;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.openjdk.jmh.annotations.*;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -31,6 +33,8 @@ public class SerializationPerformanceTest {
     AddressBook xmlAddressBook;
     Spec.AddressBook protobuffAddressBook;
     Json.AddressBook jsonAddressBook;
+    MsgPack.AddressBook msgPackAddressBookBytes;
+    Json.AddressBook jsonMsgPackAddressBook;
 
 
     @Setup
@@ -38,6 +42,8 @@ public class SerializationPerformanceTest {
         xmlAddressBook = XmlExperiment.randomAddressBook();
         protobuffAddressBook = ProtobuffExperiment.randomAddressBook();
         jsonAddressBook = JsonExperiment.randomAddressBook();
+        msgPackAddressBookBytes = MsgPackExperiment.randomAddressBook();
+        jsonMsgPackAddressBook = JsonMsgPackExperiment.randomAddressBook();
     }
 
     @Benchmark
@@ -53,5 +59,15 @@ public class SerializationPerformanceTest {
     @Benchmark
     public void json() throws JsonProcessingException {
         CONSUMER.accept(JsonExperiment.createByteArray(jsonAddressBook));
+    }
+
+    @Benchmark
+    public void msgPack() throws IOException {
+        CONSUMER.accept(MsgPackExperiment.createByteArray(msgPackAddressBookBytes));
+    }
+
+    @Benchmark
+    public void jsonMsgPack() throws IOException {
+        CONSUMER.accept(JsonMsgPackExperiment.createByteArray(jsonMsgPackAddressBook));
     }
 }

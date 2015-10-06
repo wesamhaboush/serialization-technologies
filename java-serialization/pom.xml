@@ -80,6 +80,16 @@
                 <artifactId>jmh-generator-bytecode</artifactId>
                 <version>1.11</version>
             </dependency>
+            <dependency>
+                <groupId>org.msgpack</groupId>
+                <artifactId>msgpack</artifactId>
+                <version>0.6.12</version>
+            </dependency>
+            <dependency>
+                <groupId>org.msgpack</groupId>
+                <artifactId>jackson-dataformat-msgpack</artifactId>
+                <version>0.7.0-p9</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -132,7 +142,14 @@
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-generator-bytecode</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.msgpack</groupId>
+            <artifactId>msgpack</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.msgpack</groupId>
+            <artifactId>jackson-dataformat-msgpack</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/main/java, target/generated-proto</sourceDirectory>

@@ -30,13 +30,17 @@ public class DeserializationPerformanceTest {
     byte[] xmlAddressBookBytes;
     byte[] protobuffAddressBookBytes;
     byte[] jsonAddressBookBytes;
+    byte[] msgPackAddressBookBytes;
+    byte[] jsonMsgPackAddressBookBytes;
 
 
     @Setup
-    public void setup() throws JAXBException, JsonProcessingException {
+    public void setup() throws JAXBException, IOException {
         xmlAddressBookBytes = XmlExperiment.createByteArray(XmlExperiment.randomAddressBook());
         protobuffAddressBookBytes = ProtobuffExperiment.createByteArray(ProtobuffExperiment.randomAddressBook());
         jsonAddressBookBytes = JsonExperiment.createByteArray(JsonExperiment.randomAddressBook());
+        msgPackAddressBookBytes = MsgPackExperiment.createByteArray(MsgPackExperiment.randomAddressBook());
+        jsonMsgPackAddressBookBytes = JsonMsgPackExperiment.createByteArray(JsonMsgPackExperiment.randomAddressBook());
     }
 
     @Benchmark
@@ -52,5 +56,15 @@ public class DeserializationPerformanceTest {
     @Benchmark
     public void json() throws IOException {
         CONSUMER.accept(JsonExperiment.createAddressBook(jsonAddressBookBytes));
+    }
+
+    @Benchmark
+    public void msgPack() throws IOException {
+        CONSUMER.accept(MsgPackExperiment.createAddressBook(msgPackAddressBookBytes));
+    }
+
+    @Benchmark
+    public void jsonMsgPack() throws IOException {
+        CONSUMER.accept(JsonMsgPackExperiment.createAddressBook(jsonMsgPackAddressBookBytes));
     }
 }
